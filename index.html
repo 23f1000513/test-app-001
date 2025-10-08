@@ -1,1 +1,459 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Simple Calculator</title><meta name="description" content="A simple calculator web application."><meta name="license" content="MIT"><style>body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;background-color:#f0f2f5;color:#333}#calculator-app{background-color:#ffffff;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,0.1);width:320px;overflow:hidden;padding:20px;box-sizing:border-box}#calculator-display{background-color:#222;color:#fff;font-size:3em;padding:20px;text-align:right;border-radius:8px;margin-bottom:20px;word-wrap:break-word;min-height:1.2em;box-sizing:border-box;max-width:100%;overflow-x:auto;white-space:nowrap;-ms-overflow-style:none;scrollbar-width:none}#calculator-display::-webkit-scrollbar{display:none}#calculator-buttons{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.btn{background-color:#e0e0e0;border:none;border-radius:8px;padding:20px;font-size:1.5em;cursor:pointer;transition:background-color .2s ease,transform .1s ease;outline:none;color:#333;box-shadow:0 2px 5px rgba(0,0,0,.1)}.btn:hover{background-color:#d0d0d0;transform:translateY(-1px)}.btn:active{transform:translateY(0);box-shadow:0 1px 3px rgba(0,0,0,.1)}.btn-operator,.btn-equals{background-color:#ff9500;color:#fff}.btn-operator:hover,.btn-equals:hover{background-color:#e08500}.btn-clear{background-color:#ff3b30;color:#fff}.btn-clear:hover{background-color:#e03028}.btn-zero{grid-column:span 2}</style></head><body><div id="calculator-app"><div id="calculator-display">0</div><div id="calculator-buttons"><button class="btn btn-clear">C</button><button class="btn btn-operator" data-operator="/">&divide;</button><button class="btn btn-operator" data-operator="*">&times;</button><button class="btn btn-operator" data-operator="-">-</button><button class="btn btn-number">7</button><button class="btn btn-number">8</button><button class="btn btn-number">9</button><button class="btn btn-operator" data-operator="+">+</button><button class="btn btn-number">4</button><button class="btn btn-number">5</button><button class="btn btn-number">6</button><button class="btn btn-equals" style="grid-row:span 2;grid-column:4/5;">=</button><button class="btn btn-number">1</button><button class="btn btn-number">2</button><button class="btn btn-number">3</button><button class="btn btn-number btn-zero">0</button><button class="btn btn-decimal">.</button></div></div><script>let currentInput='0';let previousInput='';let operator=null;let waitingForSecondOperand=false;const display=document.getElementById('calculator-display');function updateDisplay(){display.textContent=currentInput;if(currentInput.length>12&&currentInput.indexOf('Error')===-1){display.style.fontSize='2em'}else{display.style.fontSize='3em'}}function clear(){currentInput='0';previousInput='';operator=null;waitingForSecondOperand=false;updateDisplay()}function appendNumber(number){if(currentInput.length>=12&&currentInput.indexOf('Error')===-1&&!waitingForSecondOperand)return;if(waitingForSecondOperand){currentInput=number;waitingForSecondOperand=false}else{currentInput=currentInput==='0'&&number!=='.' ? number : currentInput+number}updateDisplay()}function appendDecimal(){if(waitingForSecondOperand){currentInput='0.';waitingForSecondOperand=false;updateDisplay();return}if(!currentInput.includes('.')){currentInput+='.'}updateDisplay()}function chooseOperator(nextOperator){if(currentInput.includes('Error')){clear()}if(operator&&waitingForSecondOperand){operator=nextOperator;return}if(previousInput!==''){calculate()}previousInput=currentInput;operator=nextOperator;waitingForSecondOperand=true}function calculate(){let result;const prev=parseFloat(previousInput);const current=parseFloat(currentInput);if(isNaN(prev)||isNaN(current))return;switch(operator){case'+':result=prev+current;break;case'-':result=prev-current;break;case'*':result=prev*current;break;case'/':if(current===0){currentInput='Error: Div by 0';previousInput='';operator=null;waitingForSecondOperand=false;updateDisplay();return}result=prev/current;break;default:return}currentInput=parseFloat(result.toFixed(10)).toString();previousInput='';operator=null;waitingForSecondOperand=true;updateDisplay()}document.querySelectorAll('.btn-number').forEach(button=>{button.addEventListener('click',()=>appendNumber(button.textContent))});document.querySelector('.btn-decimal').addEventListener('click',appendDecimal);document.querySelector('.btn-clear').addEventListener('click',clear);document.querySelectorAll('.btn-operator').forEach(button=>{button.addEventListener('click',()=>chooseOperator(button.dataset.operator))});document.querySelector('.btn-equals').addEventListener('click',calculate);document.addEventListener('keydown',e=>{if(e.key>='0'&&e.key<='9'){appendNumber(e.key)}else if(e.key==='.'){appendDecimal()}else if(e.key==='+'||e.key==='-'||e.key==='*'||e.key==='/'){e.preventDefault();chooseOperator(e.key)}else if(e.key==='Enter'||e.key==='='){e.preventDefault();calculate()}else if(e.key==='Backspace'||e.key==='Delete'){clear()}});updateDisplay()</script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Calculator</title>
+    <meta name="description" content="A simple, single-page calculator web application with an MIT license.">
+    <meta name="license" content="MIT">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            color: #333;
+        }
+
+        #app-container {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-size: 2.2em;
+            font-weight: 600;
+        }
+
+        #calculator {
+            background-color: #34495e;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.3);
+        }
+
+        #display {
+            width: calc(100% - 20px);
+            height: 70px;
+            background-color: #283747;
+            border: none;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            color: #ecf0f1;
+            text-align: right;
+            padding: 0 10px;
+            box-sizing: border-box;
+            font-weight: 300;
+            letter-spacing: 1px;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .buttons button {
+            width: 100%;
+            height: 65px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.8em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            -webkit-tap-highlight-color: transparent; /* Remove blue highlight on mobile */
+        }
+
+        .buttons button:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .buttons .number {
+            background-color: #6c7a89;
+            color: #ecf0f1;
+        }
+
+        .buttons .number:hover {
+            background-color: #5b6877;
+        }
+
+        .buttons .operator {
+            background-color: #f39c12;
+            color: #ffffff;
+        }
+
+        .buttons .operator:hover {
+            background-color: #e67e22;
+        }
+
+        .buttons .equals {
+            background-color: #27ae60;
+            color: #ffffff;
+            grid-column: span 2;
+        }
+
+        .buttons .equals:hover {
+            background-color: #229954;
+        }
+
+        .buttons .zero-btn {
+            grid-column: span 2;
+        }
+
+        #readme-section {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            text-align: left;
+            max-width: 400px;
+            width: 100%;
+            margin-top: 20px;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        #readme-section h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+            border-bottom: 2px solid #f39c12;
+            padding-bottom: 5px;
+        }
+
+        #readme-section h3 {
+            color: #34495e;
+            margin-top: 25px;
+            margin-bottom: 10px;
+            font-size: 1.4em;
+        }
+
+        #readme-section ul {
+            list-style-type: disc;
+            margin-left: 20px;
+            padding-left: 0;
+        }
+
+        #readme-section ul li {
+            margin-bottom: 5px;
+        }
+
+        #readme-section p {
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 480px) {
+            #app-container, #readme-section {
+                padding: 20px;
+                margin: 10px;
+                max-width: 95%;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            #calculator {
+                padding: 15px;
+            }
+
+            #display {
+                height: 60px;
+                font-size: 2em;
+            }
+
+            .buttons button {
+                height: 55px;
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app-container">
+        <h1>Simple Calculator</h1>
+        <div id="calculator">
+            <input type="text" id="display" disabled value="0">
+            <div class="buttons">
+                <button class="operator" id="clear">C</button>
+                <button class="operator" id="backspace">&larr;</button>
+                <button class="operator" id="modulo">%</button>
+                <button class="operator" id="divide">/</button>
+
+                <button class="number">7</button>
+                <button class="number">8</button>
+                <button class="number">9</button>
+                <button class="operator" id="multiply">*</button>
+
+                <button class="number">4</button>
+                <button class="number">5</button>
+                <button class="number">6</button>
+                <button class="operator" id="subtract">-</button>
+
+                <button class="number">1</button>
+                <button class="number">2</button>
+                <button class="number">3</button>
+                <button class="operator" id="add">+</button>
+
+                <button class="number zero-btn">0</button>
+                <button class="number" id="decimal">.</button>
+                <button class="equals" id="equals">=</button>
+            </div>
+        </div>
+
+        <div id="readme-section">
+            <h2>README</h2>
+            <p>This is a simple, single-page web application that functions as a basic calculator. It supports addition, subtraction, multiplication, division, and modulo operations. Designed for ease of use and quick calculations.</p>
+            <h3>Features:</h3>
+            <ul>
+                <li>Basic arithmetic operations (+, -, *, /, %)</li>
+                <li>Clear all (C)</li>
+                <li>Backspace (&larr;)</li>
+                <li>Decimal point support</li>
+                <li>Keyboard input support</li>
+                <li>Visually clean and responsive design</li>
+                <li>Error handling for invalid operations (e.g., division by zero)</li>
+            </ul>
+            <h3>How to Use:</h3>
+            <p>Click the number buttons to input digits. Select an operator (+, -, *, /, %) for your calculation. Click the '=' button to see the result. Use 'C' to clear the display and start a new calculation. Use '&larr;' to remove the last digit. Keyboard input is also supported.</p>
+            <h3>License:</h3>
+            <p>This project is open-source and licensed under the MIT License.</p>
+        </div>
+
+        <div id="mit-license" style="display:none;">
+            MIT License
+
+            Copyright (c) 2023 Simple Calculator App
+
+            Permission is hereby granted, free of charge, to any person obtaining a copy
+            of this software and associated documentation files (the "Software"), to deal
+            in the Software without restriction, including without limitation the rights
+            to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+            copies of the Software, and to permit persons to whom the Software is
+            furnished to do so, subject to the following conditions:
+
+            The above copyright notice and this permission notice shall be included in all
+            copies or substantial portions of the Software.
+
+            THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+            IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+            FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+            AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+            LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+            OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+            SOFTWARE.
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const display = document.getElementById('display');
+            const buttons = document.querySelector('.buttons');
+
+            let currentInput = '0';
+            let previousInput = '';
+            let operator = null;
+            let waitingForSecondOperand = false;
+
+            function updateDisplay() {
+                display.value = currentInput;
+            }
+
+            function clear() {
+                currentInput = '0';
+                previousInput = '';
+                operator = null;
+                waitingForSecondOperand = false;
+                updateDisplay();
+            }
+
+            function backspace() {
+                if (currentInput === 'Error') {
+                    clear();
+                    return;
+                }
+                if (currentInput.length > 1) {
+                    currentInput = currentInput.slice(0, -1);
+                } else {
+                    currentInput = '0';
+                }
+                updateDisplay();
+            }
+
+            function appendNumber(number) {
+                if (currentInput === 'Error') {
+                    currentInput = '0';
+                }
+                if (waitingForSecondOperand) {
+                    currentInput = number;
+                    waitingForSecondOperand = false;
+                } else {
+                    if (currentInput === '0' && number !== '.') {
+                        currentInput = number;
+                    } else {
+                        currentInput += number;
+                    }
+                }
+                updateDisplay();
+            }
+
+            function appendDecimal() {
+                if (currentInput === 'Error') {
+                    currentInput = '0.';
+                    waitingForSecondOperand = false;
+                    updateDisplay();
+                    return;
+                }
+                if (waitingForSecondOperand) {
+                    currentInput = '0.';
+                    waitingForSecondOperand = false;
+                    updateDisplay();
+                    return;
+                }
+                if (!currentInput.includes('.')) {
+                    currentInput += '.';
+                }
+                updateDisplay();
+            }
+
+            function chooseOperator(nextOperator) {
+                if (currentInput === 'Error') return;
+
+                if (operator && waitingForSecondOperand) {
+                    operator = nextOperator;
+                    return;
+                }
+
+                if (previousInput !== '') {
+                    calculate();
+                }
+
+                previousInput = currentInput;
+                operator = nextOperator;
+                waitingForSecondOperand = true;
+            }
+
+            function calculate() {
+                if (!operator || previousInput === '') {
+                    return;
+                }
+
+                let result;
+                const prev = parseFloat(previousInput);
+                const current = parseFloat(currentInput);
+
+                if (isNaN(prev) || isNaN(current)) {
+                    currentInput = 'Error';
+                    updateDisplay();
+                    return;
+                }
+
+                switch (operator) {
+                    case '+':
+                        result = prev + current;
+                        break;
+                    case '-':
+                        result = prev - current;
+                        break;
+                    case '*':
+                        result = prev * current;
+                        break;
+                    case '/':
+                        if (current === 0) {
+                            currentInput = 'Error';
+                            updateDisplay();
+                            return;
+                        }
+                        result = prev / current;
+                        break;
+                    case '%':
+                        result = prev % current;
+                        break;
+                    default:
+                        return;
+                }
+                currentInput = String(result);
+                operator = null;
+                previousInput = '';
+                waitingForSecondOperand = true;
+                updateDisplay();
+            }
+
+            buttons.addEventListener('click', (event) => {
+                const target = event.target;
+                if (!target.matches('button')) {
+                    return;
+                }
+
+                if (target.classList.contains('number')) {
+                    if (target.id === 'decimal') {
+                        appendDecimal();
+                    } else {
+                        appendNumber(target.textContent);
+                    }
+                    return;
+                }
+
+                if (target.classList.contains('operator')) {
+                    if (target.id === 'clear') {
+                        clear();
+                    } else if (target.id === 'backspace') {
+                        backspace();
+                    } else {
+                        chooseOperator(target.textContent);
+                    }
+                    return;
+                }
+
+                if (target.classList.contains('equals')) {
+                    calculate();
+                    return;
+                }
+            });
+
+            document.addEventListener('keydown', (event) => {
+                const key = event.key;
+
+                if (/[0-9]/.test(key)) {
+                    appendNumber(key);
+                } else if (key === '.') {
+                    appendDecimal();
+                } else if (key === '+' || key === '-' || key === '*' || key === '/') {
+                    chooseOperator(key);
+                } else if (key === 'Enter' || key === '=') {
+                    event.preventDefault();
+                    calculate();
+                } else if (key === 'Backspace') {
+                    backspace();
+                } else if (key === 'Escape' || key === 'c' || key === 'C') {
+                    clear();
+                } else if (key === '%') {
+                    chooseOperator('%');
+                }
+            });
+
+            updateDisplay();
+        });
+    </script>
+</body>
+</html>
