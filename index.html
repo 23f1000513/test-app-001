@@ -3,471 +3,308 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="license" content="MIT">
     <title>Simple Calculator</title>
+    <!-- Bootstrap CSS for styling -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <style>
-        :root {
-            --calculator-bg: #333;
-            --display-bg: #444;
-            --display-text: #eee;
-            --button-bg: #666;
-            --button-hover: #777;
-            --operator-bg: #f90;
-            --operator-hover: #ffa500;
-            --equals-bg: #28a745;
-            --equals-hover: #218838;
-            --clear-bg: #dc3545;
-            --clear-hover: #c82333;
-            --text-color: #fff;
-            --border-radius: 8px;
-            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
         body {
-            margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background-color: #222;
-            font-family: var(--font-family);
-            color: var(--text-color);
-            flex-direction: column;
-            padding: 20px;
-            box-sizing: border-box;
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
         }
-
         .calculator {
-            background-color: var(--calculator-bg);
-            border-radius: var(--border-radius);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
-            width: 300px;
-            max-width: 90%;
-            overflow: hidden;
-            margin-bottom: 20px;
-        }
-
-        #calculator-display {
-            background-color: var(--display-bg);
-            color: var(--display-text);
-            font-size: 2.5em;
+            background-color: #343a40;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
             padding: 20px;
-            text-align: right;
-            border-top-left-radius: var(--border-radius);
-            border-top-right-radius: var(--border-radius);
-            overflow-x: auto;
-            white-space: nowrap;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .calculator-buttons {
+            width: 320px;
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 1px;
-            background-color: #444; /* Separator color */
-            padding-top: 1px;
-            padding-left: 1px;
+            gap: 10px;
         }
-
-        .calculator-buttons button {
-            background-color: var(--button-bg);
-            color: var(--text-color);
+        .calculator-display {
+            grid-column: 1 / -1;
+            background-color: #212529;
+            color: #ffffff;
+            font-size: 2.5em;
+            text-align: right;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+        .calculator-button {
+            background-color: #6c757d;
+            color: #ffffff;
             border: none;
-            padding: 20px;
+            border-radius: 5px;
+            padding: 15px;
             font-size: 1.5em;
             cursor: pointer;
             transition: background-color 0.2s ease;
-            outline: none;
-            border-radius: 0; /* Override default button border-radius */
-        }
-
-        .calculator-buttons button:hover {
-            background-color: var(--button-hover);
-        }
-
-        .calculator-buttons button.operator {
-            background-color: var(--operator-bg);
-        }
-
-        .calculator-buttons button.operator:hover {
-            background-color: var(--operator-hover);
-        }
-
-        .calculator-buttons button#equals {
-            background-color: var(--equals-bg);
-            grid-column: span 2; /* Make equals button span two columns */
-        }
-
-        .calculator-buttons button#equals:hover {
-            background-color: var(--equals-hover);
-        }
-
-        .calculator-buttons button#clear {
-            background-color: var(--clear-bg);
-        }
-
-        .calculator-buttons button#clear:hover {
-            background-color: var(--clear-hover);
-        }
-
-        /* README & License Section */
-        .info-section {
-            background-color: var(--calculator-bg);
-            border-radius: var(--border-radius);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            width: 700px;
-            max-width: 90%;
-            margin-top: 20px;
-            box-sizing: border-box;
-        }
-
-        .info-section h2 {
-            color: #f90;
-            border-bottom: 2px solid #555;
-            padding-bottom: 10px;
-            margin-top: 0;
-        }
-
-        .info-section h3 {
-            color: #eee;
-            margin-top: 20px;
-        }
-
-        .info-section p, .info-section ul, .info-section ol, .info-section pre {
-            color: #ccc;
-            line-height: 1.6;
-        }
-
-        .info-section ul, .info-section ol {
-            list-style-position: inside;
-            margin-left: 0;
-            padding-left: 20px;
-        }
-
-        .info-section ul li, .info-section ol li {
-            margin-bottom: 5px;
-        }
-
-        .info-section pre {
-            background-color: #222;
-            padding: 15px;
-            border-radius: 5px;
-            overflow-x: auto;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-        }
-
-        /* Collapsible section for README/License */
-        .collapsible-header {
-            cursor: pointer;
+            height: 60px;
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
-            background-color: #444;
-            padding: 10px 15px;
-            border-radius: var(--border-radius);
-            margin-bottom: 0; /* Remove margin-bottom from header */
+            user-select: none;
         }
-
-        .info-section + .info-section .collapsible-header {
-            border-top-left-radius: 0;
-            border-top-right-radius: 0;
+        .calculator-button:hover {
+            background-color: #5a6268;
         }
-
-
-        .collapsible-header h2 {
-            margin: 0;
-            color: #fff;
-            border-bottom: none;
-            padding-bottom: 0;
+        .calculator-button.operator {
+            background-color: #ffc107;
+            color: #212529;
         }
-
-        .collapsible-header .arrow {
-            font-size: 1.5em;
-            transition: transform 0.3s ease;
+        .calculator-button.operator:hover {
+            background-color: #e0a800;
         }
-
-        .collapsible-header.collapsed .arrow {
-            transform: rotate(-90deg);
+        .calculator-button.equals {
+            background-color: #28a745;
         }
-
-        .collapsible-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out;
-            padding: 0 20px; /* Add horizontal padding to content */
+        .calculator-button.equals:hover {
+            background-color: #218838;
         }
-
-        .collapsible-content.expanded {
-            max-height: 1000px; /* Arbitrary large value to allow content to expand */
-            transition: max-height 0.5s ease-in;
-            padding: 20px; /* Add padding when expanded */
-            padding-top: 0; /* No top padding as header provides separation */
+        .calculator-button.clear {
+            background-color: #dc3545;
         }
-
-        /* Adjustments for first info section */
-        .info-section:first-of-type {
-            margin-top: 20px;
+        .calculator-button.clear:hover {
+            background-color: #c82333;
         }
-        .info-section:last-of-type {
-            margin-bottom: 20px;
+        .calculator-button.zero {
+            grid-column: span 2;
+        }
+        /* Hidden README content for licensing and project information */
+        #readme-content {
+            display: none;
         }
     </style>
 </head>
 <body>
     <div class="calculator">
-        <div id="calculator-display">0</div>
-        <div class="calculator-buttons">
-            <button id="clear">C</button>
-            <button class="operator" data-operator="/">/</button>
-            <button class="operator" data-operator="*">*</button>
-            <button class="operator" data-operator="-">-</button>
-
-            <button class="number" data-value="7">7</button>
-            <button class="number" data-value="8">8</button>
-            <button class="number" data-value="9">9</button>
-            <button class="operator" data-operator="+">+</button>
-
-            <button class="number" data-value="4">4</button>
-            <button class="number" data-value="5">5</button>
-            <button class="number" data-value="6">6</button>
-            <button class="number" data-value="1">1</button>
-
-            <button class="number" data-value="2">2</button>
-            <button class="number" data-value="3">3</button>
-            <button class="number" data-value="0">0</button>
-            <button id="decimal">.</button>
-
-            <button id="equals">=</button>
-        </div>
+        <div class="calculator-display" id="display">0</div>
+        <button class="calculator-button clear" data-action="clear">C</button>
+        <button class="calculator-button operator" data-action="negate">+/-</button>
+        <button class="calculator-button operator" data-action="percentage">%</button>
+        <button class="calculator-button operator" data-action="divide">/</button>
+        <button class="calculator-button" data-number="7">7</button>
+        <button class="calculator-button" data-number="8">8</button>
+        <button class="calculator-button" data-number="9">9</button>
+        <button class="calculator-button operator" data-action="multiply">*</button>
+        <button class="calculator-button" data-number="4">4</button>
+        <button class="calculator-button" data-number="5">5</button>
+        <button class="calculator-button" data-number="6">6</button>
+        <button class="calculator-button operator" data-action="subtract">-</button>
+        <button class="calculator-button" data-number="1">1</button>
+        <button class="calculator-button" data-number="2">2</button>
+        <button class="calculator-button" data-number="3">3</button>
+        <button class="calculator-button operator" data-action="add">+</button>
+        <button class="calculator-button zero" data-number="0">0</button>
+        <button class="calculator-button" data-action="decimal">.</button>
+        <button class="calculator-button equals" data-action="equals">=</button>
     </div>
 
-    <div class="info-section">
-        <div class="collapsible-header collapsed" id="readme-header">
-            <h2>README</h2>
-            <span class="arrow">&#9660;</span>
-        </div>
-        <div class="collapsible-content" id="readme-content">
-            <p><h1>Simple Calculator App</h1></p>
-            <p>This is a minimalist single-page web application that provides a basic calculator functionality.</p>
-
-            <h3>Features</h3>
-            <ul>
-                <li>Addition, Subtraction, Multiplication, Division</li>
-                <li>Clear button to reset the calculator</li>
-                <li>Decimal point support</li>
-                <li>Basic error handling (e.g., division by zero, invalid input)</li>
-                <li>Responsive design for various screen sizes</li>
-            </ul>
-
-            <h3>How to Use</h3>
-            <ol>
-                <li>Enter the first number using the number buttons.</li>
-                <li>Click an operator (+, -, *, /).</li>
-                <li>Enter the second number.</li>
-                <li>Click the equals (=) button to see the result.</li>
-                <li>Use the 'C' button to clear the current input or reset the calculator.</li>
-            </ol>
-
-            <h3>Technologies Used</h3>
-            <ul>
-                <li>HTML5</li>
-                <li>CSS3</li>
-                <li>JavaScript (ES6+)</li>
-            </ul>
-        </div>
+    <div id="readme-content">
+        <h1>Simple Calculator App</h1>
+        <p>A basic calculator web application built with HTML, CSS, and JavaScript. It provides standard arithmetic operations in a clean, user-friendly interface.</p>
+        <h2>Features</h2>
+        <ul>
+            <li>Addition, Subtraction, Multiplication, Division</li>
+            <li>Percentage calculation (e.g., 100 + 10% = 110, 50% = 0.5)</li>
+            <li>Sign change (+/-)</li>
+            <li>Decimal point support</li>
+            <li>Clear functionality ('C')</li>
+            <li>Visually clean and professional design</li>
+        </ul>
+        <h2>How to Use</h2>
+        <p>Click the number buttons to input values, then select an operator (+, -, *, /). Click '=' to see the result. Use 'C' to clear the current input and reset the calculator. The '+/-' button changes the sign of the current number, and '%' performs percentage calculations.</p>
+        <h2>License</h2>
+        <h3>MIT License</h3>
+        <p>Copyright (c) 2023 Your Name or Organization</p>
+        <p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
+        <p>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p>
+        <p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
     </div>
 
-    <div class="info-section">
-        <div class="collapsible-header collapsed" id="license-header">
-            <h2>License</h2>
-            <span class="arrow">&#9660;</span>
-        </div>
-        <div class="collapsible-content" id="license-content">
-            <h3>MIT License</h3>
-            <p>Copyright (c) 2023 Your Name/Company</p>
-            <pre>
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.</pre>
-        </div>
-    </div>
+    <!-- Bootstrap JS (optional, but included for completeness with Bootstrap CSS) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
     <script>
-        const display = document.getElementById('calculator-display');
-        const buttons = document.querySelector('.calculator-buttons');
-
-        let firstOperand = null;
-        let operator = null;
-        let waitingForSecondOperand = false;
-        let displayValue = '0';
+        const display = document.getElementById('display');
+        const calculator = document.querySelector('.calculator');
+        let currentInput = '0';
+        let previousInput = '';
+        let operation = null;
+        let resetDisplay = false;
 
         function updateDisplay() {
-            display.textContent = displayValue;
+            const maxDisplayLength = 12;
+            if (currentInput.length > maxDisplayLength && currentInput !== 'Error') {
+                let formattedInput = parseFloat(currentInput).toPrecision(maxDisplayLength - 3);
+                if (formattedInput.length > maxDisplayLength) {
+                    formattedInput = parseFloat(currentInput).toExponential(5);
+                }
+                display.textContent = formattedInput;
+                display.style.fontSize = '1.8em';
+            } else {
+                display.textContent = currentInput;
+                display.style.fontSize = '2.5em';
+            }
+        }
+
+        function appendNumber(number) {
+            if (resetDisplay) {
+                currentInput = number;
+                resetDisplay = false;
+            } else if (currentInput === '0' && number !== '.') {
+                currentInput = number;
+            } else if (number === '.' && currentInput.includes('.')) {
+                return;
+            } else {
+                currentInput += number;
+            }
+            updateDisplay();
+        }
+
+        function chooseOperation(op) {
+            if (currentInput === '') return;
+            if (previousInput !== '' && !resetDisplay) {
+                compute();
+            }
+            operation = op;
+            previousInput = currentInput;
+            resetDisplay = true;
+        }
+
+        function compute() {
+            let result;
+            const prev = parseFloat(previousInput);
+            const current = parseFloat(currentInput);
+
+            if (isNaN(prev) || isNaN(current)) return;
+
+            switch (operation) {
+                case 'add':
+                    result = prev + current;
+                    break;
+                case 'subtract':
+                    result = prev - current;
+                    break;
+                case 'multiply':
+                    result = prev * current;
+                    break;
+                case 'divide':
+                    if (current === 0) {
+                        displayError('Error');
+                        return;
+                    }
+                    result = prev / current;
+                    break;
+                default:
+                    return;
+            }
+            currentInput = String(result);
+            operation = null;
+            previousInput = '';
+            resetDisplay = true;
+            updateDisplay();
         }
 
         function clearCalculator() {
-            firstOperand = null;
-            operator = null;
-            waitingForSecondOperand = false;
-            displayValue = '0';
+            currentInput = '0';
+            previousInput = '';
+            operation = null;
+            resetDisplay = false;
+            display.style.fontSize = '2.5em';
             updateDisplay();
         }
 
-        function inputDigit(digit) {
-            if (displayValue === 'Error') {
-                clearCalculator();
-            }
-            if (waitingForSecondOperand) {
-                displayValue = digit;
-                waitingForSecondOperand = false;
+        function negateNumber() {
+            if (currentInput === '0' || currentInput === 'Error') return;
+            currentInput = String(parseFloat(currentInput) * -1);
+            updateDisplay();
+        }
+
+        function handlePercentage() {
+            if (currentInput === 'Error') return;
+
+            if (previousInput !== '' && operation && !resetDisplay) {
+                const prev = parseFloat(previousInput);
+                const current = parseFloat(currentInput);
+                let percentageValue;
+
+                switch (operation) {
+                    case 'add':
+                    case 'subtract':
+                        percentageValue = prev * (current / 100);
+                        currentInput = String(percentageValue);
+                        break;
+                    case 'multiply':
+                    case 'divide':
+                        percentageValue = current / 100;
+                        currentInput = String(percentageValue);
+                        break;
+                    default:
+                        currentInput = String(parseFloat(currentInput) / 100);
+                        break;
+                }
+                compute();
             } else {
-                displayValue = displayValue === '0' ? digit : displayValue + digit;
+                currentInput = String(parseFloat(currentInput) / 100);
             }
             updateDisplay();
+            resetDisplay = true;
         }
 
-        function inputDecimal(dot) {
-            if (displayValue === 'Error') {
-                clearCalculator();
-            }
-            if (waitingForSecondOperand) {
-                displayValue = '0.';
-                waitingForSecondOperand = false;
-                updateDisplay();
-                return;
-            }
-            if (!displayValue.includes(dot)) {
-                displayValue += dot;
-            }
-            updateDisplay();
+        function displayError(message) {
+            display.textContent = message;
+            display.style.fontSize = '1.5em';
+            currentInput = 'Error';
+            previousInput = '';
+            operation = null;
+            resetDisplay = true;
         }
 
-        function handleOperator(nextOperator) {
-            if (displayValue === 'Error') {
+        calculator.addEventListener('click', e => {
+            const target = e.target;
+            if (!target.matches('button')) return;
+
+            const action = target.dataset.action;
+            const number = target.dataset.number;
+
+            if (currentInput === 'Error' && action !== 'clear') {
+                return;
+            }
+
+            if (number) {
+                appendNumber(number);
+            } else if (action === 'add' || action === 'subtract' || action === 'multiply' || action === 'divide') {
+                chooseOperation(action);
+            } else if (action === 'equals') {
+                compute();
+            } else if (action === 'clear') {
                 clearCalculator();
-            }
-            const inputValue = parseFloat(displayValue);
-
-            if (operator && waitingForSecondOperand) {
-                operator = nextOperator;
-                return;
-            }
-
-            if (firstOperand === null) {
-                firstOperand = inputValue;
-            } else if (operator) {
-                const result = performCalculation[operator](firstOperand, inputValue);
-                if (result === 'Error' || isNaN(result)) { // Handle NaN results from operations
-                    displayValue = 'Error';
-                    firstOperand = null;
-                    operator = null;
-                    waitingForSecondOperand = false;
-                    updateDisplay();
-                    return;
-                }
-                displayValue = String(result);
-                firstOperand = result;
-            }
-
-            waitingForSecondOperand = true;
-            operator = nextOperator;
-            updateDisplay();
-        }
-
-        const performCalculation = {
-            '/': (firstOp, secondOp) => {
-                if (secondOp === 0) return 'Error'; // Division by zero
-                return firstOp / secondOp;
-            },
-            '*': (firstOp, secondOp) => firstOp * secondOp,
-            '+': (firstOp, secondOp) => firstOp + secondOp,
-            '-': (firstOp, secondOp) => firstOp - secondOp,
-        };
-
-        buttons.addEventListener('click', (event) => {
-            const { target } = event;
-            if (!target.matches('button')) {
-                return;
-            }
-
-            if (target.classList.contains('number')) {
-                inputDigit(target.dataset.value);
-                return;
-            }
-
-            if (target.classList.contains('operator')) {
-                handleOperator(target.dataset.operator);
-                return;
-            }
-
-            if (target.id === 'decimal') {
-                inputDecimal('.');
-                return;
-            }
-
-            if (target.id === 'clear') {
-                clearCalculator();
-                return;
-            }
-
-            if (target.id === 'equals') {
-                if (firstOperand === null || operator === null) {
-                    // No operation to perform, just show current display value or clear error
-                    if (displayValue === 'Error') {
-                        clearCalculator();
-                    }
-                    return;
-                }
-                
-                let secondOperand = parseFloat(displayValue);
-                if (waitingForSecondOperand) {
-                    // If equals is pressed right after an operator, use the firstOperand as secondOperand
-                    secondOperand = firstOperand;
-                }
-
-                const result = performCalculation[operator](firstOperand, secondOperand);
-                if (result === 'Error' || isNaN(result)) {
-                    displayValue = 'Error';
-                    firstOperand = null;
-                    operator = null;
-                    waitingForSecondOperand = false;
-                    updateDisplay();
-                    return;
-                }
-                displayValue = String(result);
-                firstOperand = result;
-                operator = null;
-                waitingForSecondOperand = true; // Ready for new operation or to start fresh
-                updateDisplay();
-                return;
+            } else if (action === 'decimal') {
+                appendNumber('.');
+            } else if (action === 'negate') {
+                negateNumber();
+            } else if (action === 'percentage') {
+                handlePercentage();
             }
         });
 
-        // Initialize display
         updateDisplay();
-
-        // Collapsible sections functionality
-        document.querySelectorAll('.collapsible-header').forEach(header => {
-            header.addEventListener('click', () => {
-                const content = header.nextElementSibling; // The content div
-                header.classList.toggle('collapsed');
-                content.classList.toggle('expanded');
-            });
-        });
     </script>
 </body>
 </html>
