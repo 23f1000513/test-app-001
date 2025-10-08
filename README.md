@@ -1,31 +1,26 @@
 # test-app-001: Simple Calculator Application
 
-[![Live Demo](https://img.shields.io/badge/Live_Demo-Access_Here-blue?style=for-the-badge&logo=github)](https://23f1000513.github.io/test-app-001/)
-[![Repository](https://img.shields.io/badge/GitHub_Repository-View_Code-black?style=for-the-badge&logo=github)](https://github.com/23f1000513/test-app-001)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+[![GitHub Pages Status](https://github.com/23f1000513/test-app-001/actions/workflows/deploy.yml/badge.svg)](https://github.com/23f1000513/test-app-001/actions/workflows/deploy.yml)
 
-## 1. Project Title and Brief Description
+This project, `test-app-001`, is a straightforward web-based calculator application designed to perform fundamental arithmetic operations. It provides a clean, interactive user interface for basic calculations, built using standard web technologies.
 
-**Project Title:** Simple Calculator Application (`test-app-001`)
+*   **Repository:** [https://github.com/23f1000513/test-app-001](https://github.com/23f1000513/test-app-001)
+*   **Live Demo:** [https://23f1000513.github.io/test-app-001/](https://23f1000513.github.io/test-app-001/)
 
-**Brief Description:**
-This project delivers a straightforward, web-based calculator application designed to perform basic arithmetic operations. It provides a clean, intuitive user interface for adding, subtracting, multiplying, and dividing numbers, serving as a foundational example of interactive frontend development using standard web technologies.
+---
 
-## 2. Features/Functionality Overview
+## Features
 
-The `test-app-001` calculator offers the following core functionalities:
+The Simple Calculator Application offers the following core functionalities:
 
-*   **Basic Arithmetic Operations:** Supports addition (`+`), subtraction (`-`), multiplication (`*`), and division (`/`).
-*   **Number Input:** Allows users to input single or multi-digit numbers.
-*   **Decimal Support:** Handles calculations involving decimal numbers.
-*   **Clear Functionality:** A dedicated "Clear" (C) button to reset the display and current calculation.
-*   **Equals Functionality:** An "Equals" (`=`) button to compute and display the result of the entered expression.
-*   **Real-time Display:** Shows the current input and calculation result dynamically.
+*   **Basic Arithmetic Operations:** Perform addition, subtraction, multiplication, and division.
+*   **Number Input:** Enter single or multi-digit numbers.
+*   **Clear Functionality:** Reset the calculator display and state with a dedicated "Clear" button.
+*   **Interactive Display:** Real-time feedback on inputs and results.
+*   **Decimal Support:** Handle calculations involving decimal numbers.
 
-## 3. Setup Instructions
+## Setup Instructions
 
-This project is a client-side web application and requires no complex backend setup or dependencies.
+To get a local copy of this project up and running on your machine, follow these steps:
 
-**To run the application locally:**
-
-1.  **Clone the Repository:**
+1.  **Clone the repository:**
