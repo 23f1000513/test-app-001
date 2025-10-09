@@ -3,308 +3,398 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A simple, clean, and functional calculator web application.">
     <meta name="license" content="MIT">
+    <!--
+    MIT License
+
+    Copyright (c) 2023 AI Developer
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+    -->
     <title>Simple Calculator</title>
-    <!-- Bootstrap CSS for styling -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- Bootstrap CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <style>
         body {
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background-color: #f8f9fa;
+            background-color: #f8f9fa; /* Light background */
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
         }
-        .calculator {
-            background-color: #343a40;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-            padding: 20px;
-            width: 320px;
+
+        .calculator-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
+            grid-template-columns: repeat(4, 75px); /* 4 columns, 75px each */
+            grid-template-rows: minmax(100px, auto) minmax(20px, auto) repeat(5, 75px); /* Display, Error, 5 button rows */
+            gap: 5px;
+            background-color: #343a40; /* Dark background for calculator body */
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            width: fit-content; /* Adjust width to content */
         }
-        .calculator-display {
-            grid-column: 1 / -1;
-            background-color: #212529;
-            color: #ffffff;
+
+        #calculator-display {
+            grid-column: 1 / -1; /* Span across all columns */
+            background-color: #212529; /* Even darker for display */
+            color: #fff;
             font-size: 2.5em;
             text-align: right;
             padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 10px;
+            border-radius: 10px;
+            margin-bottom: 5px; /* Reduced margin to make space for error message */
             overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            height: 70px;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
+            word-wrap: break-word; /* Ensure long numbers wrap */
+            border: none; /* Remove default input border */
+            outline: none; /* Remove outline on focus */
+            height: 100px; /* Fixed height for display */
         }
-        .calculator-button {
-            background-color: #6c757d;
-            color: #ffffff;
-            border: none;
-            border-radius: 5px;
-            padding: 15px;
-            font-size: 1.5em;
+
+        .calculator-grid > button {
             cursor: pointer;
-            transition: background-color 0.2s ease;
-            height: 60px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            user-select: none;
+            font-size: 1.5em;
+            border: none;
+            outline: none;
+            background-color: rgba(255, 255, 255, .75);
+            border-radius: 8px;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+            color: #343a40;
         }
-        .calculator-button:hover {
-            background-color: #5a6268;
+
+        .calculator-grid > button:hover {
+            background-color: rgba(255, 255, 255, .9);
+            transform: scale(1.02);
         }
-        .calculator-button.operator {
-            background-color: #ffc107;
-            color: #212529;
+
+        .calculator-grid > button:active {
+            transform: scale(0.98);
         }
-        .calculator-button.operator:hover {
-            background-color: #e0a800;
+
+        .operator {
+            background-color: #ffc107 !important; /* Yellow for operators */
+            color: #343a40 !important;
         }
-        .calculator-button.equals {
-            background-color: #28a745;
+
+        .operator:hover {
+             background-color: #ffca2c !important;
         }
-        .calculator-button.equals:hover {
-            background-color: #218838;
+
+        .equals-button {
+            background-color: #198754 !important; /* Green for equals */
+            color: white !important;
+            grid-column: span 2; /* Span two columns */
         }
-        .calculator-button.clear {
-            background-color: #dc3545;
+
+        .equals-button:hover {
+            background-color: #157347 !important;
         }
-        .calculator-button.clear:hover {
-            background-color: #c82333;
+
+        .clear-button {
+            background-color: #dc3545 !important; /* Red for clear */
+            color: white !important;
+            grid-column: span 2; /* Span two columns */
         }
-        .calculator-button.zero {
-            grid-column: span 2;
+
+        .clear-button:hover {
+            background-color: #c82333 !important;
         }
-        /* Hidden README content for licensing and project information */
-        #readme-content {
-            display: none;
+
+        .delete-button {
+            background-color: #6c757d !important; /* Gray for delete */
+            color: white !important;
+        }
+        .delete-button:hover {
+            background-color: #5a6268 !important;
+        }
+
+        #error-message {
+            grid-column: 1 / -1;
+            color: #dc3545; /* Red for error messages */
+            text-align: center;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+            height: 20px; /* Reserve space */
+            line-height: 20px;
         }
     </style>
 </head>
 <body>
-    <div class="calculator">
-        <div class="calculator-display" id="display">0</div>
-        <button class="calculator-button clear" data-action="clear">C</button>
-        <button class="calculator-button operator" data-action="negate">+/-</button>
-        <button class="calculator-button operator" data-action="percentage">%</button>
-        <button class="calculator-button operator" data-action="divide">/</button>
-        <button class="calculator-button" data-number="7">7</button>
-        <button class="calculator-button" data-number="8">8</button>
-        <button class="calculator-button" data-number="9">9</button>
-        <button class="calculator-button operator" data-action="multiply">*</button>
-        <button class="calculator-button" data-number="4">4</button>
-        <button class="calculator-button" data-number="5">5</button>
-        <button class="calculator-button" data-number="6">6</button>
-        <button class="calculator-button operator" data-action="subtract">-</button>
-        <button class="calculator-button" data-number="1">1</button>
-        <button class="calculator-button" data-number="2">2</button>
-        <button class="calculator-button" data-number="3">3</button>
-        <button class="calculator-button operator" data-action="add">+</button>
-        <button class="calculator-button zero" data-number="0">0</button>
-        <button class="calculator-button" data-action="decimal">.</button>
-        <button class="calculator-button equals" data-action="equals">=</button>
+    <!-- README for GitHub Pages -->
+    <!--
+    # Simple Calculator App
+
+    This is a minimalist, single-page web application that functions as a basic calculator.
+    It's built with pure HTML, CSS, and JavaScript, enhanced with Bootstrap for a clean and responsive design.
+
+    ## Features:
+    - Basic arithmetic operations: Addition, Subtraction, Multiplication, Division.
+    - Clear (AC) and Delete (DEL) functionality.
+    - Handles decimal numbers.
+    - Includes error handling for division by zero and invalid operations.
+    - Visually clean and professional interface.
+    - Keyboard support for numbers, operators, Enter/Equals, Backspace, and Escape (for clear).
+
+    ## How to Use:
+    1. Enter numbers using the number buttons or your keyboard.
+    2. Select an operation (+, -, *, /) using buttons or keyboard.
+    3. Enter the second number.
+    4. Press '=' or 'Enter' to see the result.
+    5. Use 'AC' or 'Escape' to clear all input, or 'DEL' or 'Backspace' to remove the last digit.
+
+    ## License:
+    This project is open-source and available under the MIT License.
+    -->
+    <div class="calculator-grid">
+        <input type="text" id="calculator-display" class="form-control" value="0" readonly>
+        <div id="error-message"></div>
+
+        <button class="clear-button" id="clear-button">AC</button>
+        <button class="delete-button" id="delete-button">DEL</button>
+        <button class="operator" id="divide-button">/</button>
+
+        <button class="number-button" id="number-7">7</button>
+        <button class="number-button" id="number-8">8</button>
+        <button class="number-button" id="number-9">9</button>
+        <button class="operator" id="multiply-button">*</button>
+
+        <button class="number-button" id="number-4">4</button>
+        <button class="number-button" id="number-5">5</button>
+        <button class="number-button" id="number-6">6</button>
+        <button class="operator" id="subtract-button">-</button>
+
+        <button class="number-button" id="number-1">1</button>
+        <button class="number-button" id="number-2">2</button>
+        <button class="number-button" id="number-3">3</button>
+        <button class="operator" id="add-button">+</button>
+
+        <button class="number-button" id="number-0">0</button>
+        <button class="number-button" id="decimal-button">.</button>
+        <button class="equals-button" id="equals-button">=</button>
     </div>
 
-    <div id="readme-content">
-        <h1>Simple Calculator App</h1>
-        <p>A basic calculator web application built with HTML, CSS, and JavaScript. It provides standard arithmetic operations in a clean, user-friendly interface.</p>
-        <h2>Features</h2>
-        <ul>
-            <li>Addition, Subtraction, Multiplication, Division</li>
-            <li>Percentage calculation (e.g., 100 + 10% = 110, 50% = 0.5)</li>
-            <li>Sign change (+/-)</li>
-            <li>Decimal point support</li>
-            <li>Clear functionality ('C')</li>
-            <li>Visually clean and professional design</li>
-        </ul>
-        <h2>How to Use</h2>
-        <p>Click the number buttons to input values, then select an operator (+, -, *, /). Click '=' to see the result. Use 'C' to clear the current input and reset the calculator. The '+/-' button changes the sign of the current number, and '%' performs percentage calculations.</p>
-        <h2>License</h2>
-        <h3>MIT License</h3>
-        <p>Copyright (c) 2023 Your Name or Organization</p>
-        <p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
-        <p>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p>
-        <p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
-    </div>
-
-    <!-- Bootstrap JS (optional, but included for completeness with Bootstrap CSS) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-
+    <!-- Bootstrap JS CDN (optional, but good practice if using Bootstrap components) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     <script>
-        const display = document.getElementById('display');
-        const calculator = document.querySelector('.calculator');
-        let currentInput = '0';
-        let previousInput = '';
-        let operation = null;
-        let resetDisplay = false;
+        class Calculator {
+            constructor(displayElement, errorMessageElement) {
+                this.displayElement = displayElement;
+                this.errorMessageElement = errorMessageElement;
+                this.clear();
+            }
 
-        function updateDisplay() {
-            const maxDisplayLength = 12;
-            if (currentInput.length > maxDisplayLength && currentInput !== 'Error') {
-                let formattedInput = parseFloat(currentInput).toPrecision(maxDisplayLength - 3);
-                if (formattedInput.length > maxDisplayLength) {
-                    formattedInput = parseFloat(currentInput).toExponential(5);
+            clear() {
+                this.currentOperand = '0';
+                this.previousOperand = '';
+                this.operation = undefined;
+                this.hasError = false;
+                this.clearError();
+                this.updateDisplay();
+            }
+
+            delete() {
+                if (this.currentOperand === '0' || this.hasError) return;
+                this.currentOperand = this.currentOperand.toString().slice(0, -1);
+                if (this.currentOperand === '') {
+                    this.currentOperand = '0';
                 }
-                display.textContent = formattedInput;
-                display.style.fontSize = '1.8em';
-            } else {
-                display.textContent = currentInput;
-                display.style.fontSize = '2.5em';
+                this.updateDisplay();
             }
-        }
 
-        function appendNumber(number) {
-            if (resetDisplay) {
-                currentInput = number;
-                resetDisplay = false;
-            } else if (currentInput === '0' && number !== '.') {
-                currentInput = number;
-            } else if (number === '.' && currentInput.includes('.')) {
-                return;
-            } else {
-                currentInput += number;
+            appendNumber(number) {
+                if (this.hasError) { // If there was an error, start fresh
+                    this.clear();
+                }
+                if (number === '.' && this.currentOperand.includes('.')) return;
+                if (this.currentOperand === '0' && number !== '.') {
+                    this.currentOperand = number.toString();
+                } else {
+                    this.currentOperand = this.currentOperand.toString() + number.toString();
+                }
+                this.updateDisplay();
             }
-            updateDisplay();
-        }
 
-        function chooseOperation(op) {
-            if (currentInput === '') return;
-            if (previousInput !== '' && !resetDisplay) {
-                compute();
+            chooseOperation(operation) {
+                if (this.hasError) return;
+                if (this.currentOperand === '') return; // No number to operate on
+                if (this.previousOperand !== '') {
+                    this.compute(); // If there's a previous operand, compute first
+                }
+                this.operation = operation;
+                this.previousOperand = this.currentOperand;
+                this.currentOperand = '';
+                this.updateDisplay();
             }
-            operation = op;
-            previousInput = currentInput;
-            resetDisplay = true;
-        }
 
-        function compute() {
-            let result;
-            const prev = parseFloat(previousInput);
-            const current = parseFloat(currentInput);
-
-            if (isNaN(prev) || isNaN(current)) return;
-
-            switch (operation) {
-                case 'add':
-                    result = prev + current;
-                    break;
-                case 'subtract':
-                    result = prev - current;
-                    break;
-                case 'multiply':
-                    result = prev * current;
-                    break;
-                case 'divide':
-                    if (current === 0) {
-                        displayError('Error');
-                        return;
-                    }
-                    result = prev / current;
-                    break;
-                default:
+            compute() {
+                let computation;
+                const prev = parseFloat(this.previousOperand);
+                const current = parseFloat(this.currentOperand);
+                if (isNaN(prev) || isNaN(current)) {
+                    this.setError('Invalid input');
                     return;
-            }
-            currentInput = String(result);
-            operation = null;
-            previousInput = '';
-            resetDisplay = true;
-            updateDisplay();
-        }
-
-        function clearCalculator() {
-            currentInput = '0';
-            previousInput = '';
-            operation = null;
-            resetDisplay = false;
-            display.style.fontSize = '2.5em';
-            updateDisplay();
-        }
-
-        function negateNumber() {
-            if (currentInput === '0' || currentInput === 'Error') return;
-            currentInput = String(parseFloat(currentInput) * -1);
-            updateDisplay();
-        }
-
-        function handlePercentage() {
-            if (currentInput === 'Error') return;
-
-            if (previousInput !== '' && operation && !resetDisplay) {
-                const prev = parseFloat(previousInput);
-                const current = parseFloat(currentInput);
-                let percentageValue;
-
-                switch (operation) {
-                    case 'add':
-                    case 'subtract':
-                        percentageValue = prev * (current / 100);
-                        currentInput = String(percentageValue);
+                }
+                switch (this.operation) {
+                    case '+':
+                        computation = prev + current;
                         break;
-                    case 'multiply':
-                    case 'divide':
-                        percentageValue = current / 100;
-                        currentInput = String(percentageValue);
+                    case '-':
+                        computation = prev - current;
+                        break;
+                    case '*':
+                        computation = prev * current;
+                        break;
+                    case '/':
+                        if (current === 0) {
+                            this.setError('Cannot divide by zero!');
+                            return;
+                        }
+                        computation = prev / current;
                         break;
                     default:
-                        currentInput = String(parseFloat(currentInput) / 100);
-                        break;
+                        return;
                 }
-                compute();
-            } else {
-                currentInput = String(parseFloat(currentInput) / 100);
-            }
-            updateDisplay();
-            resetDisplay = true;
-        }
-
-        function displayError(message) {
-            display.textContent = message;
-            display.style.fontSize = '1.5em';
-            currentInput = 'Error';
-            previousInput = '';
-            operation = null;
-            resetDisplay = true;
-        }
-
-        calculator.addEventListener('click', e => {
-            const target = e.target;
-            if (!target.matches('button')) return;
-
-            const action = target.dataset.action;
-            const number = target.dataset.number;
-
-            if (currentInput === 'Error' && action !== 'clear') {
-                return;
+                this.currentOperand = computation.toString();
+                this.operation = undefined;
+                this.previousOperand = '';
+                this.updateDisplay();
             }
 
-            if (number) {
-                appendNumber(number);
-            } else if (action === 'add' || action === 'subtract' || action === 'multiply' || action === 'divide') {
-                chooseOperation(action);
-            } else if (action === 'equals') {
-                compute();
-            } else if (action === 'clear') {
-                clearCalculator();
-            } else if (action === 'decimal') {
-                appendNumber('.');
-            } else if (action === 'negate') {
-                negateNumber();
-            } else if (action === 'percentage') {
-                handlePercentage();
+            setError(message) {
+                this.errorMessageElement.innerText = message;
+                this.hasError = true;
+                this.currentOperand = 'Error';
+                this.previousOperand = '';
+                this.operation = undefined;
+                this.displayElement.value = this.currentOperand; // Immediately show error on display
+            }
+
+            clearError() {
+                this.errorMessageElement.innerText = '';
+                this.hasError = false;
+            }
+
+            getDisplayNumber(number) {
+                const stringNumber = number.toString();
+                const integerDigits = parseFloat(stringNumber.split('.')[0]);
+                const decimalDigits = stringNumber.split('.')[1];
+                let integerDisplay;
+                if (isNaN(integerDigits)) {
+                    integerDisplay = '';
+                } else {
+                    // Use Intl.NumberFormat for thousands separators, but only for integer part
+                    integerDisplay = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(integerDigits);
+                }
+                if (decimalDigits != null) {
+                    return `${integerDisplay}.${decimalDigits}`;
+                } else {
+                    return integerDisplay;
+                }
+            }
+
+            updateDisplay() {
+                this.clearError(); // Clear any previous error message
+
+                if (this.hasError) {
+                    this.displayElement.value = 'Error';
+                    return;
+                }
+
+                const currentDisplay = this.getDisplayNumber(this.currentOperand);
+                const previousDisplay = this.getDisplayNumber(this.previousOperand);
+
+                if (this.operation != null) {
+                    if (this.currentOperand === '') {
+                        // After choosing an operation, before entering second number
+                        this.displayElement.value = `${previousDisplay} ${this.operation}`;
+                    } else {
+                        // Showing previous, operation, and current input
+                        this.displayElement.value = `${previousDisplay} ${this.operation} ${currentDisplay}`;
+                    }
+                } else {
+                    // Showing current operand or initial '0'
+                    this.displayElement.value = currentDisplay;
+                }
+
+                // Special case for initial '0' after clear or on load if current is empty
+                if (this.currentOperand === '' && this.previousOperand === '' && this.operation === undefined) {
+                    this.displayElement.value = '0';
+                }
+            }
+        }
+
+        const displayElement = document.getElementById('calculator-display');
+        const errorMessageElement = document.getElementById('error-message');
+        const numberButtons = document.querySelectorAll('.number-button');
+        const operationButtons = document.querySelectorAll('.operator');
+        const equalsButton = document.getElementById('equals-button');
+        const clearButton = document.getElementById('clear-button');
+        const deleteButton = document.getElementById('delete-button');
+
+        const calculator = new Calculator(displayElement, errorMessageElement);
+
+        numberButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                calculator.appendNumber(button.innerText);
+            });
+        });
+
+        operationButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                calculator.chooseOperation(button.innerText);
+            });
+        });
+
+        equalsButton.addEventListener('click', () => {
+            calculator.compute();
+            // updateDisplay is called inside compute if successful, or setError if not.
+            // No need to call it again here.
+        });
+
+        clearButton.addEventListener('click', () => {
+            calculator.clear();
+        });
+
+        deleteButton.addEventListener('click', () => {
+            calculator.delete();
+        });
+
+        // Keyboard support
+        document.addEventListener('keydown', e => {
+            if (e.key >= '0' && e.key <= '9') {
+                calculator.appendNumber(e.key);
+            } else if (e.key === '.') {
+                calculator.appendNumber('.');
+            } else if (e.key === '+' || e.key === '-' || e.key === '*' || e.key === '/') {
+                calculator.chooseOperation(e.key);
+            } else if (e.key === 'Enter' || e.key === '=') {
+                e.preventDefault(); // Prevent default 'Enter' behavior (e.g., form submission)
+                calculator.compute();
+            } else if (e.key === 'Backspace') {
+                calculator.delete();
+            } else if (e.key === 'Escape') {
+                calculator.clear();
             }
         });
 
-        updateDisplay();
     </script>
 </body>
 </html>
